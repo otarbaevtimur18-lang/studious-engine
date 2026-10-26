@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+<html lang="uz" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InfoTest Pro - Informatika Fanidan Intellektual Test Platformasi</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(100,116,139,0.3);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(100,116,139,0.5);
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .dark .glass-panel {
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .animated-pulse {
+            animation: pulse-border 2s infinite;
+        }
+
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+        }
+
+        /* Print styles for downloading/printing reports */
+        @media print {
+            body { background: white !important; color: black !important; }
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            .glass-panel { border: none !important; shadow: none !important; background: transparent !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-full flex flex-col selection:bg-blue-500 selection:text-white">
+
+    <!-- Top Navigation Header -->
+    <header class="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-slate-800 glass-panel no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <!-- Logo -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="showScreen('home-screen')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
+                    <i class="fa-solid fa-laptop-code text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">InfoTest Pro</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Informatika Fanidan Interaktiv Test</p>
+                </div>
+            </div>
+
+            <!-- Header Controls -->
+            <div class="flex items-center space-x-2 sm:space-x-4">
+                <button id="sound-toggle" onclick="toggleSound()" class="p-2.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition" title="Ovoz efeti">
+                    <i id="sound-icon" class="fa-solid fa-volume-high text-lg"></i>
+                </button>
+                <button id="theme-toggle" onclick="toggleTheme()" class="p-2.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition" title="Tungi/Kunduzgi rejim">
+                    <i id="theme-icon" class="fa-solid fa-moon text-lg"></i>
+                </button>
+                <button onclick="showScreen('add-question-screen')" class="hidden sm:flex items-center space-x-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 px-3.5 py-2 rounded-lg font-medium text-sm transition">
+                    <i class="fa-solid fa-plus-circle"></i>
+                    <span>Savol qo'shish</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- 1. HOME SCREEN / DASHBOARD -->
+        <section id="home-screen" class="space-y-8">
+            <!-- Hero Banner -->
+            <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-6 sm:p-10 text-white shadow-xl">
+                <div class="absolute -right-10 -bottom-10 opacity-10 text-9xl font-extrabold select-none pointer-events-none">
+                    <i class="fa-solid fa-microchip"></i>
+                </div>
+                <div class="relative z-10 max-w-2xl">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-white/20 text-white backdrop-blur-md mb-4">
+                        <i class="fa-solid fa-shield-halved mr-1.5"></i> Takrorlanmas Savollar Tizimi
+                    </span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight mb-3">Informatika fanidan bilimlaringizni sinang!</h2>
+                    <p class="text-blue-100 text-sm sm:text-base leading-relaxed mb-6">
+                        Milliy sertifikat, OTM imtihonlari va umumiy maktab va kollej dasturi bo'yicha tayyorlangan interaktiv testlar. Har safar unikal va yangilangan savollar!
+                    </p>
+                    <div class="flex flex-wrap gap-3">
+                        <button onclick="startTest('quick')" class="bg-white text-blue-600 font-semibold px-6 py-3 rounded-xl shadow-lg hover:bg-blue-50 transition transform active:scale-95 flex items-center space-x-2">
+                            <i class="fa-solid fa-bolt text-amber-500"></i>
+                            <span>Tezkor Test (10)</span>
+                        </button>
+                        <button onclick="startTest('standard')" class="bg-blue-700/60 hover:bg-blue-700/80 text-white font-semibold px-6 py-3 rounded-xl border border-white/20 backdrop-blur-md transition transform active:scale-95 flex items-center space-x-2">
+                            <i class="fa-solid fa-list-check"></i>
+                            <span>Standart Test (20)</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div class="glass-panel p-4 rounded-xl flex items-center space-x-4 shadow-sm">
+                    <div class="w-12 h-12 rounded-lg bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-database"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Jami Savollar</p>
+                        <p id="stat-total-q" class="text-xl font-bold">0</p>
+                    </div>
+                </div>
+                <div class="glass-panel p-4 rounded-xl flex items-center space-x-4 shadow-sm">
+                    <div class="w-12 h-12 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Ishlangan Testlar</p>
+                        <p id="stat-tests-completed" class="text-xl font-bold">0</p>
+                    </div>
+                </div>
+                <div class="glass-panel p-4 rounded-xl flex items-center space-x-4 shadow-sm">
+                    <div class="w-12 h-12 rounded-lg bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Eng Yuqori Natija</p>
+                        <p id="stat-best-score" class="text-xl font-bold">0%</p>
+                    </div>
+                </div>
+                <div class="glass-panel p-4 rounded-xl flex items-center space-x-4 shadow-sm">
+                    <div class="w-12 h-12 rounded-lg bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-folder-tree"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Mavzular Soni</p>
+                        <p id="stat-categories-count" class="text-xl font-bold">6</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Test Modes Selection -->
+            <div>
+                <h3 class="text-lg font-bold mb-4 flex items-center text-slate-800 dark:text-slate-200">
+                    <i class="fa-solid fa-gamepad mr-2 text-blue-500"></i> Test Rejimini Tanlang
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Tezkor -->
+                    <div onclick="startTest('quick')" class="glass-panel p-5 rounded-xl border hover:border-blue-500/50 hover:shadow-lg transition cursor-pointer group flex flex-col justify-between">
+                        <div>
+                            <div class="w-10 h-10 rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
+                                <i class="fa-solid fa-bolt"></i>
+                            </div>
+                            <h4 class="font-bold text-base mb-1">Tezkor Test</h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">10 ta tasodifiy savol. Bilimingizni tezda sinab olish uchun eng maqbul usul.</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center text-xs font-semibold text-blue-600 dark:text-blue-400">
+                            <span>10 Savol</span>
+                            <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition"></i>
+                        </div>
+                    </div>
+
+                    <!-- Standart -->
+                    <div onclick="startTest('standard')" class="glass-panel p-5 rounded-xl border hover:border-blue-500/50 hover:shadow-lg transition cursor-pointer group flex flex-col justify-between">
+                        <div>
+                            <div class="w-10 h-10 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
+                                <i class="fa-solid fa-graduation-cap"></i>
+                            </div>
+                            <h4 class="font-bold text-base mb-1">Standart Test</h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">20 ta har xil mavzulardagi aralash savollar va taymer bilan imtihon rejimi.</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center text-xs font-semibold text-blue-600 dark:text-blue-400">
+                            <span>20 Savol</span>
+                            <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition"></i>
+                        </div>
+                    </div>
+
+                    <!-- Cheksiz -->
+                    <div onclick="startTest('infinite')" class="glass-panel p-5 rounded-xl border hover:border-blue-500/50 hover:shadow-lg transition cursor-pointer group flex flex-col justify-between">
+                        <div>
+                            <div class="w-10 h-10 rounded-lg bg-purple-500/10 text-purple-500 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
+                                <i class="fa-solid fa-infinity"></i>
+                            </div>
+                            <h4 class="font-bold text-base mb-1">Cheksiz Mashq</h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Savollar tugaguncha takrorlanmasdan kelib veradi. Rekord o'rnatish imkoniyati!</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center text-xs font-semibold text-purple-600 dark:text-purple-400">
+                            <span>Cheksiz</span>
+                            <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition"></i>
+                        </div>
+                    </div>
+
+                    <!-- Qo'shish Mobile Link -->
+                    <div onclick="showScreen('add-question-screen')" class="glass-panel p-5 rounded-xl border hover:border-blue-500/50 hover:shadow-lg transition cursor-pointer group flex flex-col justify-between sm:hidden">
+                        <div>
+                            <div class="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
+                                <i class="fa-solid fa-plus"></i>
+                            </div>
+                            <h4 class="font-bold text-base mb-1">Savol Qo'shish</h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Bazaga o'zingizning yangi savollaringizni kiriting va do'stlaringiz bilan ulashing.</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                            <span>Yangi Savol</span>
+                            <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories Section -->
+            <div>
+                <h3 class="text-lg font-bold mb-4 flex items-center text-slate-800 dark:text-slate-200">
+                    <i class="fa-solid fa-layer-group mr-2 text-indigo-500"></i> Mavzuli Testlar
+                </h3>
+                <div id="categories-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Categories will be rendered dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. TEST TAKING SCREEN -->
+        <section id="test-screen" class="hidden max-w-3xl mx-auto space-y-6">
+            <!-- Header bar for test -->
+            <div class="glass-panel p-4 rounded-xl flex items-center justify-between shadow-sm">
+                <button onclick="confirmExitTest()" class="text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 px-3 py-1.5 rounded-lg text-sm transition">
+                    <i class="fa-solid fa-xmark mr-1"></i> Chiqish
+                </button>
+
+                <!-- Streak / Info -->
+                <div class="flex items-center space-x-4">
+                    <div id="streak-counter" class="hidden items-center space-x-1 text-amber-500 font-bold text-sm bg-amber-500/10 px-3 py-1 rounded-full">
+                        <i class="fa-solid fa-fire"></i>
+                        <span id="streak-val">0</span>
+                    </div>
+
+                    <!-- Timer -->
+                    <div id="timer-box" class="flex items-center space-x-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-3 py-1.5 rounded-lg font-mono font-bold text-sm">
+                        <i class="fa-regular fa-clock"></i>
+                        <span id="timer-display">15:00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="space-y-1.5">
+                <div class="flex justify-between text-xs font-semibold text-slate-500">
+                    <span>Savol: <span id="current-q-num">1</span> / <span id="total-q-num">10</span></span>
+                    <span id="category-badge" class="bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 px-2 py-0.5 rounded">Mavzu</span>
+                </div>
+                <div class="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2.5 overflow-hidden">
+                    <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full transition-all duration-300" style="width: 10%"></div>
+                </div>
+            </div>
+
+            <!-- Main Question Card -->
+            <div class="glass-panel p-6 sm:p-8 rounded-2xl shadow-md border space-y-6 relative">
+                <!-- Question Text -->
+                <div>
+                    <h3 id="question-text" class="text-lg sm:text-xl font-bold leading-snug text-slate-900 dark:text-slate-100">
+                        Savol yuklanmoqda...
+                    </h3>
+                </div>
+
+                <!-- Code block container (if present in question) -->
+                <div id="code-container" class="hidden">
+                    <pre class="bg-slate-900 text-slate-100 p-4 rounded-xl text-sm font-mono overflow-x-auto"><code id="code-block"></code></pre>
+                </div>
+
+                <!-- Options List -->
+                <div id="options-container" class="space-y-3">
+                    <!-- Dynamic Options -->
+                </div>
+
+                <!-- Explanation Box (Hidden initially) -->
+                <div id="explanation-box" class="hidden p-4 rounded-xl bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800/50 text-sm space-y-1">
+                    <div class="font-bold text-blue-700 dark:text-blue-300 flex items-center">
+                        <i class="fa-solid fa-lightbulb mr-2 text-amber-500"></i> Izoh & Tushuntirish:
+                    </div>
+                    <p id="explanation-text" class="text-slate-600 dark:text-slate-300 leading-relaxed"></p>
+                </div>
+
+                <!-- Action Footer -->
+                <div class="flex justify-between items-center pt-4 border-t border-slate-100 dark:border-slate-800">
+                    <button id="skip-btn" onclick="skipQuestion()" class="px-4 py-2 text-sm text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 font-medium transition">
+                        O'tkazib yuborish
+                    </button>
+
+                    <button id="next-btn" onclick="nextQuestion()" disabled class="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold px-6 py-2.5 rounded-xl shadow transition flex items-center space-x-2">
+                        <span>Keyingisi</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. RESULTS SCREEN -->
+        <section id="result-screen" class="hidden max-w-4xl mx-auto space-y-8">
+            <!-- Grade Card Header -->
+            <div id="result-header-card" class="glass-panel p-8 rounded-2xl shadow-xl text-center space-y-4 border relative overflow-hidden">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 text-3xl font-extrabold mb-2" id="result-badge-icon">
+                    <i class="fa-solid fa-award"></i>
+                </div>
+
+                <div>
+                    <h2 id="result-title" class="text-2xl sm:text-3xl font-black">A'lo Natija!</h2>
+                    <p id="result-subtitle" class="text-sm text-slate-500 dark:text-slate-400 mt-1">Siz Informatika bo'yicha juda yuqori bilimga egasiz.</p>
+                </div>
+
+                <!-- Score Stats breakdown -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-xl mx-auto pt-4">
+                    <div class="p-3 bg-slate-100 dark:bg-slate-800/60 rounded-xl">
+                        <span class="block text-xs text-slate-500">To'g'ri javoblar</span>
+                        <span id="res-correct" class="text-xl font-bold text-emerald-600 dark:text-emerald-400">0</span>
+                    </div>
+                    <div class="p-3 bg-slate-100 dark:bg-slate-800/60 rounded-xl">
+                        <span class="block text-xs text-slate-500">Noto'g'ri javoblar</span>
+                        <span id="res-wrong" class="text-xl font-bold text-rose-600 dark:text-rose-400">0</span>
+                    </div>
+                    <div class="p-3 bg-slate-100 dark:bg-slate-800/60 rounded-xl">
+                        <span class="block text-xs text-slate-500">Foiz darajasi</span>
+                        <span id="res-percent" class="text-xl font-bold text-blue-600 dark:text-blue-400">0%</span>
+                    </div>
+                    <div class="p-3 bg-slate-100 dark:bg-slate-800/60 rounded-xl">
+                        <span class="block text-xs text-slate-500">Sarf qilingan vaqt</span>
+                        <span id="res-time" class="text-xl font-bold text-purple-600 dark:text-purple-400">00:00</span>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap justify-center gap-3 pt-4 no-print">
+                    <button onclick="startTest(currentMode, currentCategory)" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-semibold text-sm shadow transition flex items-center space-x-2">
+                        <i class="fa-solid fa-rotate-right"></i>
+                        <span>Qayta Urinib Ko'rish</span>
+                    </button>
+                    <button onclick="window.print()" class="bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 px-5 py-2.5 rounded-xl font-semibold text-sm transition flex items-center space-x-2">
+                        <i class="fa-solid fa-print"></i>
+                        <span>Chop etish / Yuklash</span>
+                    </button>
+                    <button onclick="showScreen('home-screen')" class="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-600 dark:text-slate-300 px-5 py-2.5 rounded-xl font-semibold text-sm transition">
+                        Bosh sahifa
+                    </button>
+                </div>
+            </div>
+
+            <!-- Detailed Question Review List -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-bold flex items-center">
+                    <i class="fa-solid fa-magnifying-glass mr-2 text-blue-500"></i> Savollar Tahlili va Xatolar ustida ishlash
+                </h3>
+                <div id="review-list-container" class="space-y-4">
+                    <!-- Dynamic review items generated here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. ADD CUSTOM QUESTION SCREEN -->
+        <section id="add-question-screen" class="hidden max-w-2xl mx-auto space-y-6">
+            <div class="flex items-center justify-between">
+                <h2 class="text-2xl font-bold flex items-center">
+                    <i class="fa-solid fa-square-plus mr-2.5 text-blue-600"></i> Yangi Savol Qo'shish
+                </h2>
+                <button onclick="showScreen('home-screen')" class="text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 text-sm">
+                    <i class="fa-solid fa-arrow-left mr-1"></i> Orqaga
+                </button>
+            </div>
+
+            <form id="add-question-form" onsubmit="handleSaveQuestion(event)" class="glass-panel p-6 sm:p-8 rounded-2xl shadow-md border space-y-5">
+                <!-- Category Select -->
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Mavzu / Bo'lim</label>
+                    <select id="new-q-category" required class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="hardware">Kompyuter qurilmalari va Dasturiy ta'minot</option>
+                        <option value="binary">Sanoq sistemalari va Axborot nazariyasi</option>
+                        <option value="programming">Dasturlash asoslari (Python, Algoritmlar)</option>
+                        <option value="networks">Kompyuter tarmoqlari va Internet</option>
+                        <option value="security">Kiberxavfsizlik va Axborot xavfsizligi</option>
+                        <option value="office">Microsoft Office va OS</option>
+                    </select>
+                </div>
+
+                <!-- Question Text -->
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Savol Matni</label>
+                    <textarea id="new-q-text" required rows="3" placeholder="Masalan: Python dasturlash tilida ro'yxatga element qo'shish uchun qaysi metod ishlatiladi?" class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+
+                <!-- Code block optional -->
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Kod Parchasi (Ixtiyoriy)</label>
+                    <textarea id="new-q-code" rows="2" placeholder="a = [1, 2, 3]&#10;a.append(4)" class="w-full font-mono text-xs bg-slate-900 text-slate-100 border border-slate-800 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+
+                <!-- Answer options -->
+                <div class="space-y-3">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Variantlar (To'g'ri javobni belgilang)</label>
+
+                    <div class="flex items-center space-x-3">
+                        <input type="radio" name="correct_opt" value="0" required class="w-4 h-4 text-blue-600">
+                        <input type="text" id="opt-0" required placeholder="A variant" class="flex-grow bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <input type="radio" name="correct_opt" value="1" required class="w-4 h-4 text-blue-600">
+                        <input type="text" id="opt-1" required placeholder="B variant" class="flex-grow bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <input type="radio" name="correct_opt" value="2" required class="w-4 h-4 text-blue-600">
+                        <input type="text" id="opt-2" required placeholder="C variant" class="flex-grow bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <input type="radio" name="correct_opt" value="3" required class="w-4 h-4 text-blue-600">
+                        <input type="text" id="opt-3" required placeholder="D variant" class="flex-grow bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+
+                <!-- Explanation -->
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Izoh / Tushuntirish</label>
+                    <textarea id="new-q-explanation" required rows="2" placeholder="Ushbu javobning to'g'riligi sababi..." class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+
+                <div class="pt-2 flex justify-end space-x-3">
+                    <button type="button" onclick="showScreen('home-screen')" class="px-5 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition">
+                        Bekor qilish
+                    </button>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2.5 rounded-xl shadow transition">
+                        Saqlash
+                    </button>
+                </div>
+            </form>
+        </section>
+
+    </main>
+
+    <!-- Custom Notification Modal -->
+    <div id="toast-modal" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="glass-panel bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-5 py-3 rounded-xl shadow-2xl flex items-center space-x-3">
+            <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400"></i>
+            <span id="toast-msg" class="text-sm font-medium">Xabar</span>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        /* ==========================================================================
+           1. QUESTION DATABASE (Comprehensive & Uzbek Language)
+           ========================================================================== */
+        const DEFAULT_QUESTIONS = [
+            // Hardware & Software
+            {
+                id: "hw-1",
+                category: "hardware",
+                question: "Kompyuterning tezkor xotirasi (RAM) qanday asosiy vazifani bajaradi?",
+                options: [
+                    "Ma'lumotlarni uzoq muddatga buzilmasdan saqlash",
+                    "Joriy vaqtda bajarilayotgan dasturlar va ma'lumotlarni vaqtincha saqlash",
+                    "Grafik tasvirlarni ekranga chiqarish uchun qayta ishlash",
+                    "Kompyuterni elektr energiyasi bilan ta'minlash"
+                ],
+                correctIndex: 1,
+                explanation: "RAM (Random Access Memory) - kompyuter yoqilgan paytda bajarilayotgan jarayonlar va dasturlar ma'lumotlarini vaqtincha saqlash uchun xizmat qiladi. Tok o'chsa, undagi ma'lumotlar o'chib ketadi."
+            },
+            {
+                id: "hw-2",
+                category: "hardware",
+                question: "Protsessorning takt chastotasi (Clock Speed) nimani ko'rsatadi?",
+                options: [
+                    "Protsessor bir sekundda bajara oladigan operatsiyalar sonini",
+                    "Kompyuter ekranining yangilanish tezligini",
+                    "Qattiq diskning hajmini",
+                    "Internet ulanish tezligini"
+                ],
+                correctIndex: 0,
+                explanation: "Takt chastotasi GGs (GHz) larda o'lchanadi va protsessor bir sekundda necha milliard mantiqiy operatsiya bajara olishini belgilaydi."
+            },
+            {
+                id: "hw-3",
+                category: "hardware",
+                question: "Quyidagilardan qaysi biri faqat kiritish (input) qurilmalariga kiradi?",
+                options: [
+                    "Monitor, Klaviatura, Printer",
+                    "Skaner, Klaviatura, Sichqoncha, Mikrofon",
+                    "Proyektor, Kolonka, Plotter",
+                    "Operativ xotira, Winchester, SSD"
+                ],
+                correctIndex: 1,
+                explanation: "Skaner, klaviatura, sichqoncha va mikrofon axborotni kompyuter xotirasiga kiritish uchun xizmat qiladi. Printer va kolonka esa chiqarish qurilmalaridir."
+            },
+            {
+                id: "hw-4",
+                category: "hardware",
+                question: "BIOS (Basic Input/Output System) dasturi qayerda saqlanadi?",
+                options: [
+                    "Qattiq diskda (HDD)",
+                    "Doimiy xotira mikrosxemasida (ROM/NVRAM)",
+                    "Kesh xotirada",
+                    "Fleshka xotirasida"
+                ],
+                correctIndex: 1,
+                explanation: "BIOS apparat darajasida kompyuter platasidagi doimiy saqlash qurilmasi (ROM) mikrosxemasida saqlanadi va kompyuter yoqilganda qurilmalarni testdan o'tkazadi (POST)."
+            },
+
+            // Binary & Information Theory
+            {
+                id: "bin-1",
+                category: "binary",
+                question: "1 Gigabayt (GB) necha Megabaytga (MB) teng?",
+                options: [
+                    "1000 MB",
+                    "1024 MB",
+                    "512 MB",
+                    "2048 MB"
+                ],
+                correctIndex: 1,
+                explanation: "Informatikada ikkilik sanoq sistemasi (2^10) bo'lgani uchun 1 GB = 1024 MB bo'ladi."
+            },
+            {
+                id: "bin-2",
+                category: "binary",
+                question: "O'nlik sanoq sistemasidagi 25 soni ikkilik (Binary) sanoq sistemasida qanday yoziladi?",
+                options: [
+                    "11001",
+                    "10011",
+                    "11100",
+                    "10101"
+                ],
+                correctIndex: 0,
+                explanation: "25 ni 2 ga ketma-ket bo'lib qoldiqlarni to'plasak: 25=16+8+1 -> 11001_(2) hosil bo'ladi."
+            },
+            {
+                id: "bin-3",
+                category: "binary",
+                question: "O'n oltilik (Hexadecimal) sanoq sistemasida 'A' harfi qaysi o'nlik sonni ifodalaydi?",
+                options: [
+                    "11",
+                    "12",
+                    "10",
+                    "15"
+                ],
+                correctIndex: 2,
+                explanation: "16-lik sistemada 0-9 raqamlardan so'ng A=10, B=11, C=12, D=13, E=14, F=15 belgilanadi."
+            },
+            {
+                id: "bin-4",
+                category: "binary",
+                question: "8 bitdan iborat axborot birligi nima deb ataladi?",
+                options: [
+                    "Kilobit",
+                    "Bayt",
+                    "Tetrada",
+                    "So'z"
+                ],
+                correctIndex: 1,
+                explanation: "8 ta ketma-ket kelgan bit birgalikda 1 Bayt (Byte) ni tashkil qiladi."
+            },
+
+            // Programming & Algorithms (Python)
+            {
+                id: "prog-1",
+                category: "programming",
+                question: "Quyidagi Python kodi bajarilgach ekranga nima chiqadi?",
+                code: "x = [1, 2, 3]\ny = x\ny.append(4)\nprint(len(x))",
+                options: [
+                    "3",
+                    "4",
+                    "Error (Xatolik)",
+                    "None"
+                ],
+                correctIndex: 1,
+                explanation: "Python'da ro'yxatlar mutable (o'zgaruvchan) obyektlardir. `y = x` bajarilganda `y` xotiradagi o'sha ro'yxatga ishora qiladi. Shuning uchun `y.append(4)` bajarilgach, `x` ning uzunligi ham 4 ga teng bo'ladi."
+            },
+            {
+                id: "prog-2",
+                category: "programming",
+                question: "Python tilida mantiqiy 'AND' operatori qanday holatda True (rost) qiymat qaytaradi?",
+                options: [
+                    "Kamida bitta shart True bo'lganda",
+                    "Ikkala shart ham True bo'lganda",
+                    "Ikkala shart ham False bo'lganda",
+                    "Faqat birinchi shart False bo'lganda"
+                ],
+                correctIndex: 1,
+                explanation: "`and` (mantiqiy KO'PAYTIRISH) operatsiyasi faqat va faqat barcha qatnashayotgan shartlar True bo'lgandagina True qaytaradi."
+            },
+            {
+                id: "prog-3",
+                category: "programming",
+                question: "Quyidagi sikl necha marta takrorlanadi?",
+                code: "for i in range(2, 10, 3):\n    print(i)",
+                options: [
+                    "3 marta",
+                    "8 marta",
+                    "4 marta",
+                    "2 marta"
+                ],
+                correctIndex: 0,
+                explanation: "`range(start=2, stop=10, step=3)` sikl qiymatlari: 2, 5, 8 bo'ladi. Demak sikl jami 3 marta takrorlanadi."
+            },
+            {
+                id: "prog-4",
+                category: "programming",
+                question: "Algoritmning asosiy xossalaridan biri bo'lgan 'Chekliik' (Natijalilik) nimani anglatadi?",
+                options: [
+                    "Algoritm har bir qadami aniq ko'rsatmaga ega bo'lishi",
+                    "Algoritm chekli sonli qadamlardan so'ng albatta natija berib tugashi kerak",
+                    "Algoritm bir turdagi masalalarning barchasi uchun o'rinli bo'lishi",
+                    "Algoritm faqat grafik shaklda berilishi"
+                ],
+                correctIndex: 1,
+                explanation: "Cheklilik xossasi - algoritm chekli marta ijro etilgandan so'ng, albatta ko'zlangan natijaga erishib to'xtashi shartligini bildiradi."
+            },
+            {
+                id: "prog-5",
+                category: "programming",
+                question: "Python tilida ma'lumot turini aniqlash uchun qaysi funksiyadan foydalaniladi?",
+                options: [
+                    "typeof()",
+                    "type()",
+                    "var_type()",
+                    "gettype()"
+                ],
+                correctIndex: 1,
+                explanation: "Python'da `type(variable)` funksiyasi o'zgaruvchining qaysi ma'lumot turiga tegishli ekanligini qaytaradi."
+            },
+
+            // Computer Networks
+            {
+                id: "net-1",
+                category: "networks",
+                question: "IPv4 manzili nechta bitdan iborat?",
+                options: [
+                    "16 bit",
+                    "32 bit",
+                    "64 bit",
+                    "128 bit"
+                ],
+                correctIndex: 1,
+                explanation: "IPv4 manzillari 32 bit (4 bayt) dan iborat bo'lib, nuqta bilan ajratilgan 4 ta o'nlik son shaklida yoziladi (Masalan: 192.168.1.1)."
+            },
+            {
+                id: "net-2",
+                category: "networks",
+                question: "Veb-saytlarga kirganda domen nomlarini (masalan, google.com) IP manzilga o'girib beruvchi xizmat qanday ataladi?",
+                options: [
+                    "DHCP",
+                    "DNS (Domain Name System)",
+                    "FTP",
+                    "HTTP"
+                ],
+                correctIndex: 1,
+                explanation: "DNS servisi inson tushunadigan domen nomlarini kompyuterlar tushunadigan IP-manzillarga aylantirib beradi."
+            },
+            {
+                id: "net-3",
+                category: "networks",
+                question: "Veb-sahifalar va ma'lumotlarni xavfsiz (shifrlangan) ko'rinishda uzatish protokoli qaysi?",
+                options: [
+                    "HTTP",
+                    "HTTPS",
+                    "SMTP",
+                    "UDP"
+                ],
+                correctIndex: 1,
+                explanation: "HTTPS (HyperText Transfer Protocol Secure) SSL/TLS shifrlash protokoli orqali ma'lumotlarni xavfsiz uzatishni ta'minlaydi."
+            },
+            {
+                id: "net-4",
+                category: "networks",
+                question: "OSI tarmoq modelida jami nechta sath (layer) mavjud?",
+                options: [
+                    "5 ta",
+                    "7 ta",
+                    "4 ta",
+                    "6 ta"
+                ],
+                correctIndex: 1,
+                explanation: "OSI (Open Systems Interconnection) etalon modeli 7 ta sathdan iborat: Fizik, Kanal, Tarmoq, Transport, Seans, Taqdimot va Amaliy."
+            },
+
+            // Cybersecurity
+            {
+                id: "sec-1",
+                category: "security",
+                question: "Fishing (Phishing) hujumi deganda nimani tushunasiz?",
+                options: [
+                    "Foydalanuvchini soxta veb-saytga jalb qilib, uning maxfiy parollari va bank kartasi ma'lumotlarini o'g'irlash",
+                    "Serverga juda ko me'yordan ortiq so'rov yuborib uni ishdan chiqarish",
+                    "Kompyuter fayllarini shifrlab, pul talab qilish",
+                    "Wi-Fi tarmog'ini buzib kirish"
+                ],
+                correctIndex: 0,
+                explanation: "Fishing - bu ijtimoiy muhandislikka asoslangan firibgarlik turi bo'lib, rasmiy tashkilotlar nomidan soxta xabarlar yuborish orqali shaxsiy ma'lumotlarni o'g'irlaydi."
+            },
+            {
+                id: "sec-2",
+                category: "security",
+                question: "Ikki bosqichli autentifikatsiya (2FA) nima uchun kerak?",
+                options: [
+                    "Internet tezligini oshirish uchun",
+                    "Parolingiz o'g'irlanganda ham hisobingizga ruxsatsiz kirishdan qo'shimcha himoyalash uchun",
+                    "Fayllar hajmini kichraytirish uchun",
+                    "Kompyuterdagi viruslarni tozalash uchun"
+                ],
+                correctIndex: 1,
+                explanation: "2FA paroldan tashqari ikkinchi tasdiqlash kodi (SMS, Authenticator) so'rash orqali xavfsizlikni bir necha barobar oshiradi."
+            },
+            {
+                id: "sec-3",
+                category: "security",
+                question: "DDoS (Distributed Denial of Service) hujumining asosiy maqsadi nima?",
+                options: [
+                    "Server va tarmoq resurslariga me'yoridan ortiq so'rovlar yuborib, uni ishdan chiqarish",
+                    "Shaxsiy fotosuratlarni tarqatib yuborish",
+                    "Operatsion sistemani o'chirib tashlash",
+                    "Monitor ekranini qulflab qo'yish"
+                ],
+                correctIndex: 0,
+                explanation: "DDoS hujumida ko'plab buzib kirilgan kompyuterlar (botnet) orqali maqsadli serverga birdaniga millionlab so'rovlar yuborilib, haqiqiy foydalanuvchilar uchun xizmat ko'rsatish to'xtatiladi."
+            },
+
+            // MS Office & OS
+            {
+                id: "off-1",
+                category: "office",
+                question: "Microsoft Excel dasturida formula har doim qaysi belgi bilan boshlanadi?",
+                options: [
+                    "#",
+                    "=",
+                    "@",
+                    "$"
+                ],
+                correctIndex: 1,
+                explanation: "Excel katakchalarida har qanday hisob-kitob yoki funksiyalar tenglik (`=`) belgisi bilan boshlanishi shart."
+            },
+            {
+                id: "off-2",
+                category: "office",
+                question: "Windows operatsion sistemasida belgilangan faylni butunlay (Savatga tushirmasdan) o'chirib tashlash tugmalar birikmasi qaysi?",
+                options: [
+                    "Ctrl + Delete",
+                    "Shift + Delete",
+                    "Alt + Delete",
+                    "Ctrl + Shift + Esc"
+                ],
+                correctIndex: 1,
+                explanation: "`Shift + Delete` tugmalari birga bosilganda fayl Recycle Bin (Savat) ga tushmasdan xotiradan to'g'ridan-to me'yorda o'chiriladi."
+            },
+            {
+                id: "off-3",
+                category: "office",
+                question: "Microsoft Word dasturida matnni nusxalash va joylashtirish uchun mos ravishda qaysi tugmalar ishlatiladi?",
+                options: [
+                    "Ctrl+C va Ctrl+V",
+                    "Ctrl+X va Ctrl+Z",
+                    "Ctrl+A va Ctrl+P",
+                    "Ctrl+N va Ctrl+O"
+                ],
+                correctIndex: 0,
+                explanation: "Ctrl+C matnni clipboard'ga nusxalaydi, Ctrl+V esa uni kerakli joyga qo'yadi."
+            }
+        ];
+
+        const CATEGORIES_INFO = {
+            hardware: { name: "Kompyuter Qurilmalari & OS", icon: "fa-desktop", color: "text-blue-500", bg: "bg-blue-500/10" },
+            binary: { name: "Sanoq Sistemalari & Axborot", icon: "fa-calculator", color: "text-amber-500", bg: "bg-amber-500/10" },
+            programming: { name: "Dasturlash (Python & Algoritm)", icon: "fa-code", color: "text-emerald-500", bg: "bg-emerald-500/10" },
+            networks: { name: "Kompyuter Tarmoqlari", icon: "fa-network-wired", color: "text-indigo-500", bg: "bg-indigo-500/10" },
+            security: { name: "Kiberxavfsizlik", icon: "fa-user-shield", color: "text-rose-500", bg: "bg-rose-500/10" },
+            office: { name: "Microsoft Office & Amaliy", icon: "fa-file-excel", color: "text-purple-500", bg: "bg-purple-500/10" }
+        };
+
+        /* ==========================================================================
+           2. STATE MANAGEMENT & GLOBALS
+           ========================================================================== */
+        let questionPool = [];
+        let currentActiveQuestions = [];
+        let currentQuestionIndex = 0;
+        let userAnswers = []; // { questionId, selectedIndex, isCorrect, timeSpent }
+        let currentMode = 'quick'; // 'quick', 'standard', 'infinite', 'category'
+        let currentCategory = null;
+        let testTimerInterval = null;
+        let timeRemaining = 0; // seconds
+        let totalTimeSpent = 0;
+        let soundEnabled = true;
+        let currentStreak = 0;
+        let userStats = {
+            completedTests: 0,
+            bestScore: 0
+        };
+
+        /* Audio Synthesizer via Web Audio API (No external sound files required) */
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (!soundEnabled || !audioCtx) return;
+            try {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                const now = audioCtx.currentTime;
+
+                if (type === 'correct') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, now); // C5
+                    osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.15); // E5
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, now); // A3
+                    osc.frequency.exponentialRampToValueAtTime(130.81, now + 0.25); // C3
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                } else if (type === 'click') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(400, now);
+                    gain.gain.setValueAtTime(0.05, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+                    osc.start(now);
+                    osc.stop(now + 0.05);
+                }
+            } catch (e) {
+                console.warn("Audio play error", e);
+            }
+        }
+
+        /* Shuffle Utility Array (Fisher-Yates) */
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        /* ==========================================================================
+           3. INITIALIZATION & STORAGE
+           ========================================================================== */
+        window.addEventListener('DOMContentLoaded', () => {
+            loadStorage();
+            renderCategoryGrid();
+            updateDashboardStats();
+
+            // System dark mode preference
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('dark');
+                document.getElementById('theme-icon').className = 'fa-solid fa-sun text-lg';
+            }
+        });
+
+        function loadStorage() {
+            // Load Custom Questions
+            const custom = localStorage.getItem('infotest_custom_q');
+            if (custom) {
+                try {
+                    const parsed = JSON.parse(custom);
+                    questionPool = [...DEFAULT_QUESTIONS, ...parsed];
+                } catch(e) {
+                    questionPool = [...DEFAULT_QUESTIONS];
+                }
+            } else {
+                questionPool = [...DEFAULT_QUESTIONS];
+            }
+
+            // Load Stats
+            const stats = localStorage.getItem('infotest_user_stats');
+            if (stats) {
+                try { userStats = JSON.parse(stats); } catch(e){}
+            }
+        }
+
+        function saveStats() {
+            localStorage.setItem('infotest_user_stats', JSON.stringify(userStats));
+            updateDashboardStats();
+        }
+
+        function updateDashboardStats() {
+            document.getElementById('stat-total-q').innerText = questionPool.length;
+            document.getElementById('stat-tests-completed').innerText = userStats.completedTests || 0;
+            document.getElementById('stat-best-score').innerText = (userStats.bestScore || 0) + '%';
+        }
+
+        /* ==========================================================================
+           4. SCREEN NAVIGATION
+           ========================================================================== */
+        function showScreen(screenId) {
+            playSound('click');
+            ['home-screen', 'test-screen', 'result-screen', 'add-question-screen'].forEach(id => {
+                const el = document.getElementById(id);
+                if (id === screenId) {
+                    el.classList.remove('hidden');
+                } else {
+                    el.classList.add('hidden');
+                }
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderCategoryGrid() {
+            const grid = document.getElementById('categories-grid');
+            grid.innerHTML = '';
+
+            Object.keys(CATEGORIES_INFO).forEach(catKey => {
+                const cat = CATEGORIES_INFO[catKey];
+                const count = questionPool.filter(q => q.category === catKey).length;
+
+                const card = document.createElement('div');
+                card.className = 'glass-panel p-5 rounded-xl border hover:border-blue-500/50 hover:shadow-lg transition cursor-pointer flex items-center justify-between group';
+                card.onclick = () => startTest('category', catKey);
+
+                card.innerHTML = `
+                    <div class="flex items-center space-x-3.5">
+                        <div class="w-11 h-11 rounded-xl ${cat.bg} ${cat.color} flex items-center justify-center text-xl group-hover:scale-110 transition">
+                            <i class="fa-solid ${cat.icon}"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-800 dark:text-slate-100">${cat.name}</h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">${count} ta savol</p>
+                        </div>
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition">
+                        <i class="fa-solid fa-play text-xs"></i>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        /* ==========================================================================
+           5. TEST ENGINE (TAKRORLANMAS ALGORITM)
+           ========================================================================== */
+        function startTest(mode, categoryKey = null) {
+            currentMode = mode;
+            currentCategory = categoryKey;
+            currentQuestionIndex = 0;
+            userAnswers = [];
+            currentStreak = 0;
+            totalTimeSpent = 0;
+
+            // Filter by Category if needed
+            let filteredPool = [...questionPool];
+            if (mode === 'category' && categoryKey) {
+                filteredPool = questionPool.filter(q => q.category === categoryKey);
+                if (filteredPool.length === 0) {
+                    showToast("Ushbu mavzuda savollar topilmadi!", "error");
+                    return;
+                }
+            }
+
+            // Shuffle questions to ensure unique unrepeated order
+            let shuffledQuestions = shuffleArray(filteredPool);
+
+            // Determine test length
+            let limit = shuffledQuestions.length;
+            if (mode === 'quick') limit = Math.min(10, shuffledQuestions.length);
+            else if (mode === 'standard') limit = Math.min(20, shuffledQuestions.length);
+
+            currentActiveQuestions = shuffledQuestions.slice(0, limit);
+
+            // Prepare questions (Shuffle Options dynamically for NO-REPEAT position bias)
+            currentActiveQuestions = currentActiveQuestions.map(q => {
+                const prepared = prepareShuffledQuestion(q);
+                return prepared;
+            });
+
+            // UI Adjustments
+            document.getElementById('total-q-num').innerText = currentActiveQuestions.length;
+
+            if (mode === 'infinite') {
+                document.getElementById('streak-counter').classList.remove('hidden');
+                document.getElementById('streak-counter').classList.add('flex');
+            } else {
+                document.getElementById('streak-counter').classList.add('hidden');
+                document.getElementById('streak-counter').classList.remove('flex');
+            }
+
+            // Setup Timer
+            setupTimer(mode, currentActiveQuestions.length);
+
+            // Render First Question
+            showScreen('test-screen');
+            renderCurrentQuestion();
+        }
+
+        function prepareShuffledQuestion(q) {
+            // Create options array with original correct tracking
+            const rawOptions = q.options.map((optText, idx) => ({
+                text: optText,
+                isCorrect: idx === q.correctIndex
+            }));
+
+            // Shuffle option positions
+            const shuffledOpt = shuffleArray(rawOptions);
+            const newCorrectIdx = shuffledOpt.findIndex(o => o.isCorrect);
+
+            return {
+                ...q,
+                shuffledOptions: shuffledOpt.map(o => o.text),
+                correctIndex: newCorrectIdx
+            };
+        }
+
+        function setupTimer(mode, questionCount) {
+            if (testTimerInterval) clearInterval(testTimerInterval);
+
+            // Standard: 45 sec per question
+            timeRemaining = questionCount * 45;
+            updateTimerDisplay();
+
+            testTimerInterval = setInterval(() => {
+                timeRemaining--;
+                totalTimeSpent++;
+                updateTimerDisplay();
+
+                if (timeRemaining <= 0) {
+                    clearInterval(testTimerInterval);
+                    showToast("Vaqt tugadi!", "warning");
+                    finishTest();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(timeRemaining / 60);
+            const secs = timeRemaining % 60;
+            document.getElementById('timer-display').innerText = 
+                `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function renderCurrentQuestion() {
+            const q = currentActiveQuestions[currentQuestionIndex];
+
+            // Category badge
+            const catInfo = CATEGORIES_INFO[q.category] || { name: "Umumiy" };
+            document.getElementById('category-badge').innerText = catInfo.name;
+
+            // Progress bar
+            document.getElementById('current-q-num').innerText = currentQuestionIndex + 1;
+            const progress = ((currentQuestionIndex + 1) / currentActiveQuestions.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+
+            // Question Text
+            document.getElementById('question-text').innerText = q.question;
+
+            // Code block if available
+            const codeContainer = document.getElementById('code-container');
+            if (q.code) {
+                document.getElementById('code-block').innerText = q.code;
+                codeContainer.classList.remove('hidden');
+            } else {
+                codeContainer.classList.add('hidden');
+            }
+
+            // Reset Explanation box
+            document.getElementById('explanation-box').classList.add('hidden');
+
+            // Render Options
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+
+            const optionLetters = ['A', 'B', 'C', 'D'];
+
+            q.shuffledOptions.forEach((optText, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `option-btn w-full text-left p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-blue-500/60 dark:hover:border-blue-500/60 bg-white/50 dark:bg-slate-900/50 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition flex items-start space-x-3 group`;
+                btn.onclick = () => selectOption(idx);
+
+                btn.innerHTML = `
+                    <span class="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-xs flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition flex-shrink-0">
+                        ${optionLetters[idx]}
+                    </span>
+                    <span class="text-sm font-medium pt-0.5 text-slate-800 dark:text-slate-200 leading-snug">${escapeHtml(optText)}</span>
+                `;
+                container.appendChild(btn);
+            });
+
+            // Reset Next Button
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.disabled = true;
+            nextBtn.querySelector('span').innerText = (currentQuestionIndex === currentActiveQuestions.length - 1) ? "Yakunlash" : "Keyingisi";
+        }
+
+        function selectOption(index) {
+            const q = currentActiveQuestions[currentQuestionIndex];
+            const isCorrect = index === q.correctIndex;
+
+            // Record Answer
+            userAnswers[currentQuestionIndex] = {
+                questionId: q.id,
+                selectedIndex: index,
+                isCorrect: isCorrect
+            };
+
+            // Option styling feedback
+            const container = document.getElementById('options-container');
+            const btns = container.querySelectorAll('.option-btn');
+
+            btns.forEach((btn, idx) => {
+                btn.disabled = true;
+                btn.classList.remove('hover:border-blue-500/60', 'hover:bg-blue-50/50');
+
+                if (idx === q.correctIndex) {
+                    btn.classList.add('border-emerald-500', 'bg-emerald-50/80', 'dark:bg-emerald-900/30', 'text-emerald-900', 'dark:text-emerald-200');
+                    btn.querySelector('span').classList.add('bg-emerald-600', 'text-white');
+                } else if (idx === index && !isCorrect) {
+                    btn.classList.add('border-rose-500', 'bg-rose-50/80', 'dark:bg-rose-900/30', 'text-rose-900', 'dark:text-rose-200');
+                    btn.querySelector('span').classList.add('bg-rose-600', 'text-white');
+                }
+            });
+
+            // Audio & Streak
+            if (isCorrect) {
+                playSound('correct');
+                currentStreak++;
+            } else {
+                playSound('wrong');
+                currentStreak = 0;
+            }
+
+            document.getElementById('streak-val').innerText = currentStreak;
+
+            // Show explanation
+            if (q.explanation) {
+                document.getElementById('explanation-text').innerText = q.explanation;
+                document.getElementById('explanation-box').classList.remove('hidden');
+            }
+
+            // Enable Next
+            document.getElementById('next-btn').disabled = false;
+        }
+
+        function skipQuestion() {
+            playSound('click');
+            userAnswers[currentQuestionIndex] = {
+                questionId: currentActiveQuestions[currentQuestionIndex].id,
+                selectedIndex: -1,
+                isCorrect: false
+            };
+            nextQuestion();
+        }
+
+        function nextQuestion() {
+            playSound('click');
+            if (currentQuestionIndex < currentActiveQuestions.length - 1) {
+                currentQuestionIndex++;
+                renderCurrentQuestion();
+            } else {
+                finishTest();
+            }
+        }
+
+        function confirmExitTest() {
+            if (confirm("Testni to'xtatmoqchimisiz? Natijalar saqlanmaydi.")) {
+                if (testTimerInterval) clearInterval(testTimerInterval);
+                showScreen('home-screen');
+            }
+        }
+
+        /* ==========================================================================
+           6. TEST RESULTS & ANALYTICS
+           ========================================================================== */
+        function finishTest() {
+            if (testTimerInterval) clearInterval(testTimerInterval);
+
+            // Calculate stats
+            let correctCount = 0;
+            userAnswers.forEach(ans => {
+                if (ans && ans.isCorrect) correctCount++;
+            });
+
+            const total = currentActiveQuestions.length;
+            const percentage = Math.round((correctCount / total) * 100);
+
+            // Update user stats
+            userStats.completedTests = (userStats.completedTests || 0) + 1;
+            if (percentage > (userStats.bestScore || 0)) {
+                userStats.bestScore = percentage;
+            }
+            saveStats();
+
+            // Populate Result Screen UI
+            document.getElementById('res-correct').innerText = `${correctCount} / ${total}`;
+            document.getElementById('res-wrong').innerText = total - correctCount;
+            document.getElementById('res-percent').innerText = `${percentage}%`;
+
+            const mins = Math.floor(totalTimeSpent / 60);
+            const secs = totalTimeSpent % 60;
+            document.getElementById('res-time').innerText = `${mins}:${secs.toString().padStart(2, '0')}`;
+
+            // Grade Badge & Titles
+            const titleEl = document.getElementById('result-title');
+            const subEl = document.getElementById('result-subtitle');
+            const iconContainer = document.getElementById('result-badge-icon');
+
+            if (percentage >= 85) {
+                titleEl.innerText = "A'lo Natija! 🏆";
+                subEl.innerText = "Siz Informatika fanidan juda yuqori va mukammal bilimga egasiz.";
+                iconContainer.className = "inline-flex items-center justify-center w-20 h-20 rounded-full bg-emerald-100 text-emerald-600 text-3xl font-extrabold mb-2";
+                iconContainer.innerHTML = `<i class="fa-solid fa-trophy"></i>`;
+            } else if (percentage >= 70) {
+                titleEl.innerText = "Yaxshi Natija! 👍";
+                subEl.innerText = "Bilimingiz yaxshi, biroq ayrim mavzular ustida yana ishlash tavsiya etiladi.";
+                iconContainer.className = "inline-flex items-center justify-center w-20 h-20 rounded-full bg-blue-100 text-blue-600 text-3xl font-extrabold mb-2";
+                iconContainer.innerHTML = `<i class="fa-solid fa-thumbs-up"></i>`;
+            } else if (percentage >= 50) {
+                titleEl.innerText = "Qoniqarli 😐";
+                subEl.innerText = "Natijangiz o'rtacha. Yana ham yaxshiroq tayyorgarlik ko'rish zarur.";
+                iconContainer.className = "inline-flex items-center justify-center w-20 h-20 rounded-full bg-amber-100 text-amber-600 text-3xl font-extrabold mb-2";
+                iconContainer.innerHTML = `<i class="fa-solid fa-face-meh"></i>`;
+            } else {
+                titleEl.innerText = "Qayta Urinib Ko'ring 😕";
+                subEl.innerText = "Afsuski, natijangiz past. Mavzularni qaytadan o'rganib chiqishni maslahat beramiz.";
+                iconContainer.className = "inline-flex items-center justify-center w-20 h-20 rounded-full bg-rose-100 text-rose-600 text-3xl font-extrabold mb-2";
+                iconContainer.innerHTML = `<i class="fa-solid fa-book-open"></i>`;
+            }
+
+            // Render Detailed Question Review
+            renderReviewList();
+
+            showScreen('result-screen');
+        }
+
+        function renderReviewList() {
+            const container = document.getElementById('review-list-container');
+            container.innerHTML = '';
+
+            currentActiveQuestions.forEach((q, idx) => {
+                const userAns = userAnswers[idx] || { selectedIndex: -1, isCorrect: false };
+                const isCorrect = userAns.isCorrect;
+
+                const item = document.createElement('div');
+                item.className = `glass-panel p-5 rounded-xl border ${isCorrect ? 'border-emerald-500/40' : 'border-rose-500/40'} space-y-3`;
+
+                const optLetters = ['A', 'B', 'C', 'D'];
+
+                let userAnsText = userAns.selectedIndex >= 0 ? q.shuffledOptions[userAns.selectedIndex] : "Javob berilmagan (O'tkazib yuborilgan)";
+                let correctAnsText = q.shuffledOptions[q.correctIndex];
+
+                item.innerHTML = `
+                    <div class="flex items-start justify-between">
+                        <h4 class="font-bold text-sm text-slate-800 dark:text-slate-100">
+                            ${idx + 1}. ${escapeHtml(q.question)}
+                        </h4>
+                        <span class="px-2.5 py-1 rounded-full text-xs font-bold ${isCorrect ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300'}">
+                            ${isCorrect ? 'To\'g\'ri' : 'Noto\'g\'ri'}
+                        </span>
+                    </div>
+
+                    ${q.code ? `<pre class="bg-slate-900 text-slate-100 p-3 rounded-lg text-xs font-mono overflow-x-auto"><code>${escapeHtml(q.code)}</code></pre>` : ''}
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                        <div class="p-2.5 rounded-lg ${isCorrect ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300' : 'bg-rose-50 dark:bg-rose-900/20 text-rose-800 dark:text-rose-300'}">
+                            <span class="font-semibold block">Sizning javobingiz:</span>
+                            ${escapeHtml(userAnsText)}
+                        </div>
+                        <div class="p-2.5 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300">
+                            <span class="font-semibold block">To'g'ri javob:</span>
+                            ${escapeHtml(correctAnsText)}
+                        </div>
+                    </div>
+
+                    ${q.explanation ? `
+                        <div class="p-3 bg-slate-100 dark:bg-slate-800/80 rounded-lg text-xs text-slate-600 dark:text-slate-300">
+                            <strong class="text-slate-700 dark:text-slate-200"><i class="fa-solid fa-lightbulb text-amber-500 mr-1"></i> Izoh:</strong> ${escapeHtml(q.explanation)}
+                        </div>
+                    ` : ''}
+                `;
+
+                container.appendChild(item);
+            });
+        }
+
+        /* ==========================================================================
+           7. CUSTOM QUESTION BUILDER
+           ========================================================================== */
+        function handleSaveQuestion(e) {
+            e.preventDefault();
+
+            const category = document.getElementById('new-q-category').value;
+            const questionText = document.getElementById('new-q-text').value.trim();
+            const codeText = document.getElementById('new-q-code').value.trim();
+            const explanationText = document.getElementById('new-q-explanation').value.trim();
+
+            const opt0 = document.getElementById('opt-0').value.trim();
+            const opt1 = document.getElementById('opt-1').value.trim();
+            const opt2 = document.getElementById('opt-2').value.trim();
+            const opt3 = document.getElementById('opt-3').value.trim();
+
+            const radios = document.getElementsByName('correct_opt');
+            let correctIdx = -1;
+            for (let r of radios) {
+                if (r.checked) {
+                    correctIdx = parseInt(r.value);
+                    break;
+                }
+            }
+
+            if (correctIdx === -1) {
+                showToast("Iltimos, to'g'ri javob variantini belgilang!", "warning");
+                return;
+            }
+
+            const newQ = {
+                id: 'custom-' + Date.now(),
+                category: category,
+                question: questionText,
+                code: codeText || null,
+                options: [opt0, opt1, opt2, opt3],
+                correctIndex: correctIdx,
+                explanation: explanationText
+            };
+
+            // Save to LocalStorage
+            let customStored = [];
+            const existing = localStorage.getItem('infotest_custom_q');
+            if (existing) {
+                try { customStored = JSON.parse(existing); } catch(e){}
+            }
+            customStored.push(newQ);
+            localStorage.setItem('infotest_custom_q', JSON.stringify(customStored));
+
+            // Reload pool
+            questionPool.push(newQ);
+
+            // Clear Form
+            document.getElementById('add-question-form').reset();
+
+            showToast("Yangi savol muvaffaqiyatli saqlandi!", "success");
+            updateDashboardStats();
+            renderCategoryGrid();
+            showScreen('home-screen');
+        }
+
+        /* ==========================================================================
+           8. UTILITIES & THEME
+           ========================================================================== */
+        function toggleTheme() {
+            playSound('click');
+            const isDark = document.documentElement.classList.toggle('dark');
+            document.getElementById('theme-icon').className = isDark ? 'fa-solid fa-sun text-lg' : 'fa-solid fa-moon text-lg';
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const icon = document.getElementById('sound-icon');
+            if (soundEnabled) {
+                icon.className = 'fa-solid fa-volume-high text-lg';
+                playSound('click');
+            } else {
+                icon.className = 'fa-solid fa-volume-xmark text-lg text-rose-500';
+            }
+        }
+
+        function showToast(msg, type = "success") {
+            const modal = document.getElementById('toast-modal');
+            const icon = document.getElementById('toast-icon');
+            const text = document.getElementById('toast-msg');
+
+            text.innerText = msg;
+            if (type === 'success') icon.className = 'fa-solid fa-circle-check text-emerald-400';
+            else if (type === 'warning') icon.className = 'fa-solid fa-triangle-exclamation text-amber-400';
+            else icon.className = 'fa-solid fa-circle-xmark text-rose-400';
+
+            modal.classList.remove('translate-y-20', 'opacity-0');
+            modal.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                modal.classList.remove('translate-y-0', 'opacity-100');
+                modal.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
